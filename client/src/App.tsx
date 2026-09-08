@@ -8,6 +8,7 @@ import { RegisterPage } from './features/auth/pages/RegisterPage.js';
 import { clearLegacySession } from './features/auth/session.js';
 import type { AuthResponse } from './features/auth/types.js';
 import { Workspace } from './features/workspace/Workspace.js';
+import { TixoraLoader } from './components/shared/TixoraLoader.js';
 
 type AuthMode = 'login' | 'register';
 type AuthEntryPoint = 'login' | 'register' | 'restored';
@@ -127,7 +128,7 @@ export function App() {
     }
   }, [session]);
 
-  if (isRestoringSession) return <main className="auth-shell" role="status">Loading your workspace...</main>;
+  if (isRestoringSession) return <TixoraLoader variant="full" />;
 
   if (session) {
     return (

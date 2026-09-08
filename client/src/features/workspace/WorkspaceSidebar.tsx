@@ -2,6 +2,7 @@ import { Activity, Bot, CalendarDays, ChevronLeft, ChevronRight, CircleDot, Layo
 import { getInitials } from '../../lib/formatters.js';
 import { OrgSwitcher } from '../../components/layout/OrgSwitcher.js';
 import tixoraLogo from '../../assests/tixora-logo.jpeg';
+import { TixoraLoader } from '../../components/shared/TixoraLoader.js';
 import type { AuthResponse } from '../auth/types.js';
 import type { ProjectSummary } from '../projects/types.js';
 import type { TeamDetail, TeamSummary } from '../organizations/types.js';
@@ -18,6 +19,7 @@ type WorkspaceSidebarProps = {
   selectedProject: ProjectSummary | null;
   workspaceMemberCount: number;
   projectMemberCount: number;
+  isResolvingProjects: boolean;
   includeArchivedProjects: boolean;
   isCollapsed: boolean;
   isOrgSwitcherOpen: boolean;
@@ -46,6 +48,7 @@ export function WorkspaceSidebar({
   selectedProject,
   workspaceMemberCount,
   projectMemberCount,
+  isResolvingProjects,
   includeArchivedProjects,
   isCollapsed,
   isOrgSwitcherOpen,
@@ -124,7 +127,12 @@ export function WorkspaceSidebar({
           <span>Show archived</span>
         </label>
         <div className="sidebar-list">
-          {projects.length === 0 ? <div className="soft-empty">No projects yet.</div> : null}
+          {isResolvingProjects ? (
+            <div className="soft-empty sidebar-loader-row">
+              <TixoraLoader variant="inline" label="Loading projects..." />
+            </div>
+          ) : null}
+          {!isResolvingProjects && projects.length === 0 ? <div className="soft-empty">No projects yet.</div> : null}
           {projects.map((project) => (
             <button
               key={project.id}

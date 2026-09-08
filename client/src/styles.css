@@ -211,6 +211,110 @@ button {
   border-color: transparent;
 }
 
+.tixora-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tixora-loader-full {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--page);
+}
+
+.tixora-loader-panel {
+  min-height: 180px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.tixora-loader-inline {
+  justify-content: flex-start;
+  min-height: 28px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.tixora-loader-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface));
+}
+
+.tixora-loader-inline .tixora-loader-mark {
+  width: 24px;
+  height: 24px;
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.tixora-loader-mark span {
+  width: 4px;
+  border-radius: 999px;
+  background: var(--primary);
+  animation: tixora-loader-bars 0.9s ease-in-out infinite;
+}
+
+.tixora-loader-mark span:nth-child(1) {
+  height: 9px;
+}
+
+.tixora-loader-mark span:nth-child(2) {
+  height: 15px;
+  animation-delay: 0.12s;
+}
+
+.tixora-loader-mark span:nth-child(3) {
+  height: 20px;
+  animation-delay: 0.24s;
+}
+
+.tixora-loader-inline .tixora-loader-mark span:nth-child(1) {
+  height: 7px;
+}
+
+.tixora-loader-inline .tixora-loader-mark span:nth-child(2) {
+  height: 11px;
+}
+
+.tixora-loader-inline .tixora-loader-mark span:nth-child(3) {
+  height: 14px;
+}
+
+@keyframes tixora-loader-bars {
+  0%, 100% {
+    transform: scaleY(0.7);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tixora-loader-mark span {
+    animation: none;
+  }
+}
+
 .field-error {
   display: flex;
   align-items: center;

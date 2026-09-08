@@ -3,6 +3,7 @@ import { getInitials } from '../../lib/formatters.js';
 import { useEffect, useState } from 'react';
 import { useUserSearch } from './hooks.js';
 import type { TeamMember } from './types.js';
+import { TixoraLoader } from '../../components/shared/TixoraLoader.js';
 
 type Props = {
   members: TeamMember[];
@@ -34,7 +35,7 @@ export function OrganizationMembersStep({ members, isSaving, onAddMembers, onCon
       }}>
         <label>Find registered teammates<span className="onboarding-search"><Search size={17} aria-hidden="true" /><input value={search} disabled={isSaving} onChange={(event) => { setSearch(event.target.value); setSelected([]); }} placeholder="Search by name or email" /></span></label>
         <p className="onboarding-field-note">Search for people who already have a Tixora account.</p>
-        {search.trim() && (directory.isFetching || search.trim() !== query) ? <p role="status">Searching...</p> : null}
+        {search.trim() && (directory.isFetching || search.trim() !== query) ? <TixoraLoader variant="inline" label="Searching teammates..." /> : null}
         {directory.isError ? <p role="alert" className="field-error">Could not search members. <button type="button" onClick={() => void directory.refetch()}>Retry</button></p> : null}
         {query && query === search.trim() && !directory.isFetching && !directory.isError ? (
           <div className="onboarding-results">

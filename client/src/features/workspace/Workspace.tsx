@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import { useForm } from 'react-hook-form';
 import { Toast } from '../../components/shared/Toast.js';
+import { TixoraLoader } from '../../components/shared/TixoraLoader.js';
 import {
   useChangePassword,
   useDeleteAccount,
@@ -845,6 +846,7 @@ export function Workspace({ session, onLogout, onSessionChange }: WorkspaceProps
         selectedProject={selectedProject}
         workspaceMemberCount={workspaceMembers.length}
         projectMemberCount={projectMembers.length}
+        isResolvingProjects={Boolean(selectedTeamSlug) && projectsQuery.isFetching && !projectsQuery.data}
         includeArchivedProjects={includeArchivedProjects}
         isCollapsed={isSidebarCollapsed}
         isOrgSwitcherOpen={isOrgSwitcherOpen}
@@ -915,7 +917,7 @@ export function Workspace({ session, onLogout, onSessionChange }: WorkspaceProps
             <button type="button" className="primary-button" onClick={() => void failedQuery.refetch()}>Retry</button>
           </section>
         ) : isLoading ? (
-          <section className="empty-state" role="status" aria-live="polite">Loading your workspace...</section>
+          <TixoraLoader variant="panel" />
         ) : shouldShowSetupFlow ? (
           <section className="setup-flow onboarding">
             <div className="setup-intro">
