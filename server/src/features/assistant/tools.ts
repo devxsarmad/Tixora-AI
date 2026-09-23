@@ -1023,6 +1023,7 @@ async function summarizeAssigneeWorkload(params: {
 export async function executeAssistantToolCall(params: {
   call: AssistantToolCall;
   userId: string;
+  userDisplayName: string;
   orgId: string;
 }): Promise<AssistantToolResult> {
   try {
@@ -1134,6 +1135,7 @@ export async function executeAssistantToolCall(params: {
       const task = await updateTask({
         taskId,
         userId: params.userId,
+        userDisplayName: params.userDisplayName,
         input: { status: args.status }
       });
       return { toolCallId: params.call.id, toolName: params.call.name, ok: true, result: formatTask(task) };
@@ -1150,6 +1152,7 @@ export async function executeAssistantToolCall(params: {
       const task = await updateTask({
         taskId,
         userId: params.userId,
+        userDisplayName: params.userDisplayName,
         input: { priority: args.priority }
       });
       return { toolCallId: params.call.id, toolName: params.call.name, ok: true, result: formatTask(task) };
@@ -1166,6 +1169,7 @@ export async function executeAssistantToolCall(params: {
       const task = await updateTask({
         taskId,
         userId: params.userId,
+        userDisplayName: params.userDisplayName,
         input: { dueAt: normalizeDueAt(args.dueAt) }
       });
       return { toolCallId: params.call.id, toolName: params.call.name, ok: true, result: formatTask(task) };

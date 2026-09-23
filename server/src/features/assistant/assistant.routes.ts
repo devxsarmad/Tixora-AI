@@ -17,6 +17,7 @@ assistantRouter.post(
 
     const result = await askAssistant({
       userId: authReq.user.id,
+      userDisplayName: authReq.user.displayName,
       orgSlug: orgSlugHeader || undefined,
       input
     });
@@ -35,6 +36,7 @@ assistantRouter.post(
 
     const result = await confirmAssistantActions({
       userId: authReq.user.id,
+      userDisplayName: authReq.user.displayName,
       orgSlug: orgSlugHeader || undefined,
       input
     });

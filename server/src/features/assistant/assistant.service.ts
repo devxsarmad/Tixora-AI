@@ -373,6 +373,7 @@ function buildFallbackAnswer(chunks: RetrievalChunk[], toolResults: AssistantToo
 
 export async function askAssistant(params: {
   userId: string;
+  userDisplayName: string;
   orgSlug?: string;
   input: AskAssistantInput;
 }) {
@@ -391,6 +392,7 @@ export async function askAssistant(params: {
     const toolResults = [await executeAssistantToolCall({
       call: deterministicReadCall,
       userId: params.userId,
+      userDisplayName: params.userDisplayName,
       orgId: scope.orgId
     })];
 
@@ -473,6 +475,7 @@ export async function askAssistant(params: {
       executeAssistantToolCall({
         call,
         userId: params.userId,
+        userDisplayName: params.userDisplayName,
         orgId: scope.orgId
       })
     )
@@ -530,6 +533,7 @@ export async function askAssistant(params: {
 
 export async function confirmAssistantActions(params: {
   userId: string;
+  userDisplayName: string;
   orgSlug?: string;
   input: ConfirmAssistantActionsInput;
 }) {
@@ -599,6 +603,7 @@ export async function confirmAssistantActions(params: {
           argumentsText: pendingAction.argumentsText
         },
         userId: params.userId,
+        userDisplayName: params.userDisplayName,
         orgId: scope.orgId
       });
 

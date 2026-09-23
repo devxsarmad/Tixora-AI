@@ -83,6 +83,7 @@ taskRouter.patch(
     const task = await updateTask({
       taskId: params.taskId,
       userId: authReq.user.id,
+      userDisplayName: authReq.user.displayName,
       input
     });
 
@@ -100,6 +101,7 @@ taskRouter.put(
     const task = await replaceTaskAssignees({
       taskId: params.taskId,
       userId: authReq.user.id,
+      userDisplayName: authReq.user.displayName,
       input
     });
 

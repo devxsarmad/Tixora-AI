@@ -18,12 +18,13 @@ type JwtPayload = {
 type ActiveUserRow = {
   id: string;
   email: string;
+  displayName: string;
 };
 
 async function findActiveUserById(userId: string): Promise<AuthenticatedUser | null> {
   const result = await query<ActiveUserRow>(
     `
-      SELECT id, email
+      SELECT id, email, display_name AS "displayName"
       FROM users
       WHERE id = $1
         AND is_active = true

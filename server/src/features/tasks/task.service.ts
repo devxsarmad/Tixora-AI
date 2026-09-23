@@ -25,20 +25,25 @@ function uniqueIds(ids: string[] | undefined): string[] {
 
 function dispatchNewAssignments(params: {
   taskId: string;
+  taskTitle: string;
   projectId: string;
   assignedBy: string;
+  assignedByName: string;
   previousAssigneeIds: string[];
-  assigneeIds: string[];
+  assignees: Array<{ id: string; displayName: string }>;
 }): void {
   const previousAssigneeIds = new Set(params.previousAssigneeIds);
 
-  for (const assigneeId of params.assigneeIds) {
-    if (previousAssigneeIds.has(assigneeId)) continue;
+  for (const assignee of params.assignees) {
+    if (previousAssigneeIds.has(assignee.id)) continue;
 
     dispatchEvent('task.assigned', {
       taskId: params.taskId,
-      assigneeId,
+      taskTitle: params.taskTitle,
+      assigneeId: assignee.id,
+      assigneeName: assignee.displayName,
       assignedBy: params.assignedBy,
+      assignedByName: params.assignedByName,
       projectId: params.projectId
     });
   }
@@ -135,6 +140,7 @@ export async function getTask(params: { taskId: string; userId: string }) {
 export async function updateTask(params: {
   taskId: string;
   userId: string;
+  userDisplayName: string;
   input: UpdateTaskInput;
 }) {
   const tracksStatusChange = params.input.status !== undefined;
@@ -162,20 +168,24 @@ export async function updateTask(params: {
   if (tracksStatusChange && previousTask && previousTask.status !== task.status) {
     dispatchEvent('task.status_changed', {
       taskId: task.id,
+      taskTitle: task.title,
       oldStatus: previousTask.status,
       newStatus: task.status,
       projectId: task.projectId,
-      updatedBy: params.userId
+      updatedBy: params.userId,
+      updatedByName: params.userDisplayName
     });
   }
 
   if (tracksAssignmentChange && previousTask) {
     dispatchNewAssignments({
       taskId: task.id,
+      taskTitle: task.title,
       projectId: task.projectId,
       assignedBy: params.userId,
+      assignedByName: params.userDisplayName,
       previousAssigneeIds: previousTask.assignees.map((assignee) => assignee.id),
-      assigneeIds: task.assignees.map((assignee) => assignee.id)
+      assignees: task.assignees
     });
   }
 
@@ -186,6 +196,7 @@ export async function updateTask(params: {
 export async function replaceTaskAssignees(params: {
   taskId: string;
   userId: string;
+  userDisplayName: string;
   input: ReplaceTaskAssigneesInput;
 }) {
   const previousTask = await findTaskDetailForUser({
@@ -204,10 +215,12 @@ export async function replaceTaskAssignees(params: {
   if (previousTask) {
     dispatchNewAssignments({
       taskId: task.id,
+      taskTitle: task.title,
       projectId: task.projectId,
       assignedBy: params.userId,
+      assignedByName: params.userDisplayName,
       previousAssigneeIds: previousTask.assignees.map((assignee) => assignee.id),
-      assigneeIds: task.assignees.map((assignee) => assignee.id)
+      assignees: task.assignees
     });
   }
 
