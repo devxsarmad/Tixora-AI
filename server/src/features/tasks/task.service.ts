@@ -4,6 +4,7 @@
 
 import { enqueueTaskEmbedding } from '../assistant/embedding.service.js';
 import { HttpError } from '../../shared/http-error.js';
+import { dispatchEvent } from '../../utils/webhookDispatcher.js';
 import {
   createTaskForProject,
   findTaskDetailForUser,
@@ -20,6 +21,27 @@ import type {
 
 function uniqueIds(ids: string[] | undefined): string[] {
   return [...new Set(ids ?? [])];
+}
+
+function dispatchNewAssignments(params: {
+  taskId: string;
+  projectId: string;
+  assignedBy: string;
+  previousAssigneeIds: string[];
+  assigneeIds: string[];
+}): void {
+  const previousAssigneeIds = new Set(params.previousAssigneeIds);
+
+  for (const assigneeId of params.assigneeIds) {
+    if (previousAssigneeIds.has(assigneeId)) continue;
+
+    dispatchEvent('task.assigned', {
+      taskId: params.taskId,
+      assigneeId,
+      assignedBy: params.assignedBy,
+      projectId: params.projectId
+    });
+  }
 }
 
 function isInvalidAssigneeResult(
@@ -115,6 +137,15 @@ export async function updateTask(params: {
   userId: string;
   input: UpdateTaskInput;
 }) {
+  const tracksStatusChange = params.input.status !== undefined;
+  const tracksAssignmentChange = params.input.assigneeIds !== undefined;
+  const previousTask = tracksStatusChange || tracksAssignmentChange
+    ? await findTaskDetailForUser({
+        taskId: params.taskId,
+        userId: params.userId
+      })
+    : null;
+
   const result = await updateTaskForUser({
     taskId: params.taskId,
     userId: params.userId,
@@ -127,6 +158,27 @@ export async function updateTask(params: {
   });
 
   const task = handleTaskWriteResult(result);
+
+  if (tracksStatusChange && previousTask && previousTask.status !== task.status) {
+    dispatchEvent('task.status_changed', {
+      taskId: task.id,
+      oldStatus: previousTask.status,
+      newStatus: task.status,
+      projectId: task.projectId,
+      updatedBy: params.userId
+    });
+  }
+
+  if (tracksAssignmentChange && previousTask) {
+    dispatchNewAssignments({
+      taskId: task.id,
+      projectId: task.projectId,
+      assignedBy: params.userId,
+      previousAssigneeIds: previousTask.assignees.map((assignee) => assignee.id),
+      assigneeIds: task.assignees.map((assignee) => assignee.id)
+    });
+  }
+
   enqueueTaskEmbedding(task.id);
   return task;
 }
@@ -136,11 +188,28 @@ export async function replaceTaskAssignees(params: {
   userId: string;
   input: ReplaceTaskAssigneesInput;
 }) {
+  const previousTask = await findTaskDetailForUser({
+    taskId: params.taskId,
+    userId: params.userId
+  });
+
   const result = await replaceTaskAssigneesForUser({
     taskId: params.taskId,
     userId: params.userId,
     assigneeIds: uniqueIds(params.input.assigneeIds)
   });
 
-  return handleTaskWriteResult(result);
+  const task = handleTaskWriteResult(result);
+
+  if (previousTask) {
+    dispatchNewAssignments({
+      taskId: task.id,
+      projectId: task.projectId,
+      assignedBy: params.userId,
+      previousAssigneeIds: previousTask.assignees.map((assignee) => assignee.id),
+      assigneeIds: task.assignees.map((assignee) => assignee.id)
+    });
+  }
+
+  return task;
 }
