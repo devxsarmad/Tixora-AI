@@ -5,7 +5,7 @@
 // Production uses the /api proxy so HttpOnly cookies stay on the frontend's
 // origin. A stale build-time backend URL must not bypass that proxy.
 const API_BASE_URL = import.meta.env.PROD
-  ? (import.meta.env.VITE_API_BASE_URL ?? "")
+  ? ""
   : (import.meta.env.VITE_API_BASE_URL ?? "")
 
 export const AUTH_EXPIRED_EVENT = "tixora:auth-expired";

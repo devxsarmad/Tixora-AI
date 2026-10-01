@@ -5,7 +5,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://tixora-ai-1.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://tixora-ai-9pt5.onrender.com/api/:path*" },
     { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
   ],
   "headers": [
